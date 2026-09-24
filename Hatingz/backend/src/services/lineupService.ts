@@ -2,7 +2,7 @@
 import { teams } from '../config/store';
 import { ApiError } from '../middlewares/errorHandler';
 import { getLineupById, getCommunityLineups, getVoteCount, saveLineup, getUserLineups, getLineupAuthorName } from '../repositories/lineupRepository';
-import { getPlayersByTeam } from '../repositories/playerRepository';
+import { getPlayerById, getPlayersByTeam } from '../repositories/playerRepository';
 import { validateLineupPayload } from '../models/validators';
 import type { Lineup } from '../models';
 
@@ -19,16 +19,37 @@ export async function saveUserLineup(input: { userId: string; teamSlug: string; 
   }
 
   const availablePlayers = await getPlayersByTeam(input.teamSlug);
-  const playerIds = input.playerIds;
-  const teamPlayerIds = new Set(availablePlayers.map((player) => player.id));
+  const playerIds = input.playerIds.map((playerId) => String(playerId));
+  const selectedTeam = teams.find((team) => team.slug === input.teamSlug);
+  const teamPlayerIds = new Set(availablePlayers.map((player) => String(player.id)));
+  const selectedPlayers = await Promise.all(playerIds.map((playerId) => getPlayerById(playerId)));
+  console.info('[ratingz] Validating lineup players:', {
+    team_id: selectedTeam?.id ?? input.teamSlug,
+    team_slug: input.teamSlug,
+    player_ids: playerIds,
+    players: selectedPlayers.map((player, index) => ({
+      player_id: playerIds[index],
+      team_id: player ? String(player.teamId) : null,
+    })),
+  });
   if (playerIds.length !== 11 || new Set(playerIds).size !== 11) {
     throw new ApiError(400, 'INVALID_LINEUP', 'A lineup must contain exactly 11 unique players');
   }
-  if (playerIds.some((playerId) => !teamPlayerIds.has(playerId))) {
+  if (playerIds.some((playerId) => {
+    const player = selectedPlayers[playerIds.indexOf(playerId)];
+    const belongsToTeam = Boolean(player && selectedTeam && String(player.teamId) === String(selectedTeam.id));
+    console.info('[ratingz] Lineup player team check:', {
+      team_id: selectedTeam?.id ?? input.teamSlug,
+      player_id: playerId,
+      player_team_id: player ? String(player.teamId) : null,
+      belongs_to_team: belongsToTeam,
+    });
+    return !belongsToTeam || !teamPlayerIds.has(playerId);
+  })) {
     throw new ApiError(400, 'INVALID_PLAYER', 'A lineup player must belong to the selected team');
   }
 
-  const teamId = teams.find((team) => team.slug === input.teamSlug)?.id ?? 'team-corinthians';
+  const teamId = selectedTeam?.id ?? 'team-corinthians';
   const existingLineup = (await getUserLineups(input.userId)).find((lineup) => lineup.teamId === teamId && lineup.matchId === (input.matchId ?? null));
   const lineupId = existingLineup?.id ?? `lineup-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 

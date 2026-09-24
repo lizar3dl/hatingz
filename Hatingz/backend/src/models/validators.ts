@@ -56,7 +56,7 @@ export function validateLineupPayload(payload: {
   if (!Array.isArray(payload.playerIds) || payload.playerIds.length === 0 || payload.playerIds.length > 11) {
     errors.push('playerIds must contain between 1 and 11 players');
   }
-  if (new Set(payload.playerIds).size !== payload.playerIds.length) {
+  if (Array.isArray(payload.playerIds) && new Set(payload.playerIds).size !== payload.playerIds.length) {
     errors.push('playerIds must be unique');
   }
   return { isValid: errors.length === 0, errors };

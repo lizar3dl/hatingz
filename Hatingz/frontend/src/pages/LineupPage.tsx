@@ -56,9 +56,9 @@ export default function LineupPage() {
         return;
       }
       await api.post("/lineups", {
-        teamSlug: favoriteTeam?.slug ?? "",
+        team_id: favoriteTeam?.slug ?? "",
         formation,
-        playerIds,
+        player_ids: playerIds.map(String),
         isPublished: true,
       });
       setMessage("Lineup saved successfully");
