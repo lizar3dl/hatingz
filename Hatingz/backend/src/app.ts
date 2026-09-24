@@ -4,6 +4,7 @@ import authRoutes from './routes/authRoutes';
 import matchRoutes from './routes/matchRoutes';
 import lineupRoutes from './routes/lineupRoutes';
 import expulsionVoteRoutes from './routes/expulsionVoteRoutes';
+import teamRoutes from './routes/teamRoutes';
 import { requestLogger } from './middlewares/requestLogger';
 import { errorHandler } from './middlewares/errorHandler';
 
@@ -21,6 +22,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/matches', matchRoutes);
 app.use('/api/lineups', lineupRoutes);
 app.use('/api/matches', expulsionVoteRoutes);
+app.use('/api/teams', teamRoutes);
 app.use(errorHandler);
 
 export default app;
