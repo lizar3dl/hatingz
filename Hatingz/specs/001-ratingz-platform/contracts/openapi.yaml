@@ -1,0 +1,263 @@
+openapi: 3.0.3
+info:
+  title: Ratingz BFF API
+  version: 1.0.0
+  description: Contracts for authentication, team-scoped matches, lineups, and votes.
+servers:
+  - url: http://localhost:3000
+tags:
+  - name: Auth
+  - name: Matches
+  - name: Lineups
+  - name: Votes
+paths:
+  /api/auth/register:
+    post:
+      tags: [Auth]
+      summary: Create a torcedor account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Account created with a bearer token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Authenticate a torcedor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authenticated session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /api/matches:
+    get:
+      tags: [Matches]
+      security: [{ bearerAuth: [] }]
+      summary: List matches for the authenticated user's favorite team
+      responses:
+        '200':
+          description: Team-scoped match cards
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/MatchCard' }
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /api/lineups:
+    post:
+      tags: [Lineups]
+      security: [{ bearerAuth: [] }]
+      summary: Save the authenticated user's lineup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LineupRequest'
+      responses:
+        '201':
+          description: Saved lineup
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Lineup' }
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /api/lineups/community:
+    get:
+      tags: [Lineups]
+      security: [{ bearerAuth: [] }]
+      summary: List published community lineups
+      responses:
+        '200':
+          description: Published lineups with vote totals
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Lineup' }
+  /api/lineups/{lineupId}/votes:
+    post:
+      tags: [Votes]
+      security: [{ bearerAuth: [] }]
+      summary: Vote once for a published lineup
+      parameters:
+        - $ref: '#/components/parameters/LineupId'
+      responses:
+        '201':
+          description: Updated lineup vote total
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/VoteCount' }
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /api/matches/{matchId}/expulsion-votes:
+    post:
+      tags: [Votes]
+      security: [{ bearerAuth: [] }]
+      summary: Vote once to expel a player in a match
+      parameters:
+        - $ref: '#/components/parameters/MatchId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [playerId]
+              properties:
+                playerId: { type: string }
+      responses:
+        '201':
+          description: Updated expulsion vote total
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/VoteCount' }
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+components:
+  parameters:
+    LineupId:
+      name: lineupId
+      in: path
+      required: true
+      schema: { type: string }
+    MatchId:
+      name: matchId
+      in: path
+      required: true
+      schema: { type: string }
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    RegisterRequest:
+      type: object
+      required: [name, email, password, favoriteTeamSlug]
+      properties:
+        name: { type: string, minLength: 1 }
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8 }
+        favoriteTeamSlug: { type: string, enum: [palmeiras, bahia, corinthians, sao-paulo, vasco] }
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string }
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token: { type: string }
+        user:
+          type: object
+          required: [name, email, favoriteTeam]
+          properties:
+            name: { type: string }
+            email: { type: string, format: email }
+            favoriteTeam: { $ref: '#/components/schemas/Team' }
+    Team:
+      type: object
+      required: [name, slug, logoUrl]
+      properties:
+        name: { type: string }
+        slug: { type: string }
+        logoUrl: { type: string, format: uri }
+    MatchCard:
+      type: object
+      required: [homeTeam, awayTeam, homeScore, awayScore, status, startsAt]
+      properties:
+        homeTeam: { $ref: '#/components/schemas/Team' }
+        awayTeam: { $ref: '#/components/schemas/Team' }
+        homeScore: { type: integer, minimum: 0 }
+        awayScore: { type: integer, minimum: 0 }
+        status: { type: string }
+        startsAt: { type: string, format: date-time }
+    LineupRequest:
+      type: object
+      required: [teamSlug, formation, playerIds, isPublished]
+      properties:
+        teamSlug: { type: string }
+        matchId: { type: string, nullable: true }
+        formation: { type: string, enum: ['4-3-3'] }
+        playerIds:
+          type: array
+          uniqueItems: true
+          maxItems: 11
+          items: { type: string }
+        isPublished: { type: boolean }
+    Lineup:
+      allOf:
+        - $ref: '#/components/schemas/LineupRequest'
+        - type: object
+          required: [authorName, voteCount]
+          properties:
+            authorName: { type: string }
+            voteCount: { type: integer, minimum: 0 }
+    VoteCount:
+      type: object
+      required: [voteCount]
+      properties:
+        voteCount: { type: integer, minimum: 0 }
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string }
+        message: { type: string }
+  responses:
+    ValidationError:
+      description: Invalid request
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    UnauthorizedError:
+      description: Missing or invalid authentication
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    ConflictError:
+      description: Duplicate or conflicting action
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }

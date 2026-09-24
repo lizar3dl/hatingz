@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+:root { color-scheme: dark; font-family: Inter, sans-serif; color: #f7f8fa; background: #0b1016; --surface: #131a22; --surface-2: #1b2530; --line: #293541; --accent: #d5f24a; --muted: #8c9aa8; --success: #5ee1a0; --danger: #ff7b69; --pitch-deep: #174b35; --focus: rgba(213,242,74,.3); }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; background: radial-gradient(circle at 80% 0%, #17232b 0, #0b1016 42rem); color: #f7f8fa; }
+a { color: inherit; text-decoration: none; }
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+.site-header { height: 72px; display: flex; align-items: center; gap: 42px; padding: 0 clamp(20px, 6vw, 84px); border-bottom: 1px solid var(--line); background: rgba(11,16,22,.88); position: sticky; top: 0; z-index: 3; backdrop-filter: blur(14px); }
+.brand { font: 700 1.25rem 'Barlow Condensed', sans-serif; letter-spacing: .1em; }
+.brand-mark { display: inline-grid; place-items: center; width: 28px; height: 28px; margin-right: 8px; background: var(--accent); color: #0b1016; border-radius: 7px; }
+.main-nav { display: flex; gap: 26px; color: var(--muted); font-size: .9rem; font-weight: 600; }
+.main-nav a.active, .main-nav a:hover { color: var(--accent); }
+.header-action { margin-left: auto; color: var(--muted); background: none; border: 0; }
+.page-shell { max-width: 1120px; margin: 0 auto; padding: 52px 24px 80px; }
+.lineup-form { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr); gap: 18px 28px; align-items: start; max-width: 1120px; margin: 0 auto; }
+.formation-selector { grid-column: 1; display: grid; gap: 8px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }.formation-selector > span { color: var(--muted); font-size: .68rem; font-weight: 700; letter-spacing: .14em; }.formation-selector > div { display: flex; flex-wrap: wrap; gap: 8px; }.formation-selector button { padding: 8px 13px; color: var(--muted); background: var(--surface-2); border: 1px solid var(--line); border-radius: 5px; font: 700 .8rem 'Barlow Condensed', sans-serif; }.formation-selector button:hover, .formation-selector button.is-active { color: #10170c; background: var(--accent); border-color: var(--accent); }
+.lineup-form .pitch-field { grid-column: 1; grid-row: 2 / span 2; }
+.lineup-form .bench { grid-column: 2; grid-row: 2; }
+.lineup-form .save-bar { grid-column: 2; grid-row: 3; padding-top: 0; display: grid; gap: 14px; justify-content: stretch; }
+.lineup-form .save-bar .primary-button { width: 100%; }
+.page-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 32px; }
+h1 { margin: 5px 0 8px; font: 700 clamp(2rem, 4vw, 3.4rem)/1 'Barlow Condensed', sans-serif; letter-spacing: -.02em; }
+.page-heading p { margin: 0; color: var(--muted); }
+.eyebrow { color: var(--accent); font-size: .72rem; letter-spacing: .18em; font-weight: 700; }
+.formation-badge, .live-badge { border: 1px solid #718132; color: var(--accent); padding: 8px 12px; border-radius: 5px; font-weight: 700; font-size: .8rem; }
+.live-badge { color: #ff7b69; border-color: #733b36; }
+.save-bar { display: flex; align-items: center; justify-content: space-between; padding-top: 18px; color: var(--muted); }
+.primary-button, .vote-button { border: 0; background: var(--accent); color: #11170d; border-radius: 6px; padding: 11px 18px; font-weight: 700; }
+.primary-button:disabled, .vote-button:disabled { opacity: .45; cursor: not-allowed; }
+.muted, .empty-state { color: var(--muted); }
+.candidate-grid, .community-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 14px; }
+.candidate-card, .community-card { background: linear-gradient(145deg, var(--surface-2), var(--surface)); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+.candidate-card { display: grid; grid-template-columns: 42px 1fr auto; gap: 12px; align-items: center; }
+.candidate-avatar { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: #334352; color: var(--accent); font-weight: 700; }
+.candidate-info { display: grid; gap: 4px; }.candidate-info span, .card-meta span { color: var(--muted); font-size: .78rem; }.candidate-votes { text-align: right; display: grid; }.candidate-votes span { color: var(--muted); font-size: .65rem; }.candidate-card .vote-button { grid-column: 1 / -1; width: 100%; padding: 8px; }.candidate-card.is-voted { border-color: #65752b; }
+.card-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; }.card-meta strong { font-size: .9rem; }.vote-counter { display: block; margin-top: 14px; color: var(--accent); font-size: .8rem; }
+.match-row { margin-bottom: 16px; }.match-card { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; padding: 20px 24px; background: linear-gradient(145deg, var(--surface-2), var(--surface)); border: 1px solid var(--line); border-radius: 12px; }.match-card__teams { display: grid; grid-template-columns: minmax(110px, 1fr) auto minmax(110px, 1fr); align-items: center; gap: clamp(14px, 4vw, 40px); }.match-team { display: flex; align-items: center; gap: 14px; font-size: 1rem; }.match-team strong { font: 700 2rem 'Barlow Condensed', sans-serif; color: var(--accent); }.match-team--away { justify-content: flex-end; text-align: right; }.match-status { display: grid; justify-items: center; gap: 6px; color: var(--muted); font-size: .7rem; white-space: nowrap; }.status-chip { padding: 4px 8px; border: 1px solid #65752b; border-radius: 99px; color: var(--accent); font-weight: 700; text-transform: uppercase; }.match-vote { display: inline-flex; align-items: center; gap: 8px; padding: 10px 13px; color: var(--accent); border: 1px solid #65752b; border-radius: 7px; font-size: .76rem; font-weight: 700; white-space: nowrap; }.match-vote:hover { background: rgba(213,242,74,.1); }.mini-pitch { position: relative; width: min(100%, 220px); aspect-ratio: 4 / 5; min-height: 275px; margin: 18px auto; overflow: hidden; background: repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 1px, transparent 1px 12.5%), linear-gradient(90deg, #1d6a3c, #2b854b, #1d6a3c); border: 1px solid #8fc99a; border-radius: 5px; }.mini-pitch::before { content: ""; position: absolute; inset: 5%; border: 1px solid rgba(255,255,255,.65); background: linear-gradient(to bottom, transparent 49.7%, rgba(255,255,255,.65) 49.7% 50.3%, transparent 50.3%); }.mini-pitch::after { content: ""; position: absolute; width: 24%; aspect-ratio: 1; left: 38%; top: 38%; border: 1px solid rgba(255,255,255,.65); border-radius: 50%; }.mini-pitch .pitch-box { position: absolute; z-index: 0; left: 28%; width: 44%; height: 16%; border: 1px solid rgba(255,255,255,.65); }.mini-pitch .pitch-box--top { top: 5%; border-top: 0; }.mini-pitch .pitch-box--bottom { bottom: 5%; border-bottom: 0; }.mini-player { z-index: 1; position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 18%; min-width: 28px; height: 25px; transform: translate(-50%, -50%); border-radius: 3px; background: #18252a; border: 1px solid var(--accent); color: var(--accent); font-size: .55rem; }.mini-player b { font-size: .65rem; line-height: 1; }.mini-player small { position: absolute; top: calc(100% + 1px); width: 52px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #fff; text-align: center; font-size: .42rem; }
+.auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 32px 16px; background: radial-gradient(circle at 50% 0%, #1c3540 0, transparent 40%), #080c12; }
+.auth-card { width: min(100%, 420px); padding: 36px; background: linear-gradient(150deg, #1e293b, #111827 70%); border: 1px solid #334155; border-radius: 16px; box-shadow: 0 24px 70px rgba(0, 0, 0, .42); }
+.auth-brand { display: flex; align-items: center; justify-content: center; color: #f8fafc; font: 700 1.15rem 'Barlow Condensed', sans-serif; letter-spacing: .18em; }
+.auth-brand .brand-mark { margin-right: 10px; }
+.auth-kicker { margin: 18px 0 0; color: var(--accent); text-align: center; font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.auth-card h1 { margin: 12px 0 8px; text-align: center; font-size: clamp(2rem, 7vw, 2.7rem); }
+.auth-subtitle { margin: 0 auto 28px; max-width: 300px; color: var(--muted); text-align: center; font-size: .88rem; line-height: 1.5; }
+.auth-form { display: grid; gap: 18px; }
+.auth-form label { display: grid; gap: 8px; color: #d8e0e8; font-size: .8rem; font-weight: 600; }
+.auth-form input, .auth-form select { width: 100%; min-height: 46px; padding: 0 13px; color: #f8fafc; background: #0f172a; border: 1px solid #3a4a5c; border-radius: 8px; outline: none; transition: border-color .2s, box-shadow .2s; }
+.auth-form select { appearance: auto; }
+.auth-form input:focus, .auth-form select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(213, 242, 74, .14); }
+.auth-submit { width: 100%; min-height: 48px; margin-top: 4px; border: 0; border-radius: 8px; color: #10150b; background: var(--accent); font-weight: 800; transition: transform .2s, filter .2s; }
+.auth-submit:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.auth-error { margin: -4px 0 0; padding: 10px 12px; color: #ffb4a9; background: rgba(127, 29, 29, .28); border: 1px solid #7f3838; border-radius: 7px; font-size: .82rem; }
+.auth-switch { margin: 24px 0 0; color: var(--muted); text-align: center; font-size: .84rem; }
+.auth-switch a { color: var(--accent); font-weight: 700; }
+.auth-switch a:hover { text-decoration: underline; }
+@media (max-width: 650px) { .site-header { gap: 18px; padding: 0 16px; }.main-nav { gap: 10px; font-size: .75rem; }.brand { font-size: 1rem; }.page-shell { padding: 34px 16px; }.page-heading { display: block; }.formation-badge, .live-badge { display: inline-block; margin-top: 18px; }.lineup-form { display: grid; grid-template-columns: 1fr; }.lineup-form .formation-selector, .lineup-form .pitch-field, .lineup-form .bench, .lineup-form .save-bar { grid-column: 1; grid-row: auto; }.match-card { grid-template-columns: 1fr; padding: 16px; }.match-card__teams { gap: 8px; }.match-team { gap: 7px; font-size: .8rem; }.match-team strong { font-size: 1.6rem; }.match-vote { justify-content: center; }.mini-pitch { min-height: 210px; } }
+@media (max-width: 460px) { .auth-card { padding: 28px 20px; } }
